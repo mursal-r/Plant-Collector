@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Plant
 
 # plants = [
@@ -22,10 +23,10 @@ def home(request):
 def about(request):
     return render(request, 'about.html')
 
-def plants_index(request):
-    return render(request, 'plants/index.html', {
-        'plants': plants
-    })
+# def plants_index(request):
+#     return render(request, 'plants/index.html', {
+#         'plants': plants
+#     })
 
 def plants_index(request):
     plants = Plant.objects.all()
@@ -40,3 +41,16 @@ def plants_detail(request, plant_id ):
     return render(request, 'plants/detail.html', {
         'plant' : plant
     })
+
+class PlantCreate(CreateView):
+    model = Plant
+    fields = '__all__'
+
+class PlantUpdate(UpdateView):
+  model = Plant
+  # Let's disallow the renaming of a cat by excluding the name field!
+  fields = ['name', 'type', 'description']
+
+class PlantDelete(DeleteView):
+  model = Plant
+  success_url = '/plants'
