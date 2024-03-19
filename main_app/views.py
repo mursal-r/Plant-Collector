@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Plant
+from .forms import FeedingForm
 
 # plants = [
 #     {'name': 'Bird of Paradise', 'type': 'Tropical', 'description': 'The banana-like leaves on the bird of paradise are an attractive feature that makes them stand out. They love bright, indirect sunlight (at least six hours a day) and require constant misting during the spring and summer months.'},
@@ -38,9 +39,20 @@ def plants_index(request):
 
 def plants_detail(request, plant_id ):
     plant = Plant.objects.get(id=plant_id)
+    feeding_form = FeedingForm()
     return render(request, 'plants/detail.html', {
-        'plant' : plant
+        'plant': plant, 'feeding_form': feeding_form
     })
+
+def add_feeding(request, plant_id):
+    form = FeedingForm(request.POST)
+    if form.is_valid():
+        new_feeding = form.save(commit=False)
+        new_feeding.plant_id = plant_id
+        new_feeding.save()
+    return redirect('detail', plant_id=plant_id)
+
+
 
 class PlantCreate(CreateView):
     model = Plant
